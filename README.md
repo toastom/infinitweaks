@@ -5,9 +5,9 @@ Reduce the amount of used memory to save resources for your own custom apps, wat
 
 ### Requirements
 - Any Linux system with a bash terminal
-- A local InfiniTime repository (duh)
-- A PineTime smartwatch from Pine64 (super duh)
-- Your favorite PineTime companion app
+- A local InfiniTime repository
+- A PineTime smartwatch from Pine64
+- Your favorite PineTime companion app. Probably itd or one of those supported on the PinePhone
 
 ### Current Features
 - CLI interface.
