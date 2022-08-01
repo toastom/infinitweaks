@@ -43,12 +43,17 @@ command_list=(
 )
 
 it_changes=("<e>InfiniPaint" "<i>Twos")
+it_dir=""
 
-
+# Show all apps and watchfaces available for the user to modify
+# Dependent on the version of IT directory set by 'setit' command
 function all {
 	echo ""
 }
 
+# Requires $it_dir to be set by 'setit' command
+# Edits the files in the $it_dir directory to apply marked changes
+# Needs error checking to ensure the user has set a proper IT dir
 function apply {
 	echo ""
 }
@@ -57,6 +62,7 @@ function compile {
 	echo ""
 }
 
+# Include a new app or watchface into the list of marked changes to InfiniTime
 function include () {
 	# Marking changes as <i> in $it_changes
 	echo -e "\nAdding the following Apps and Watchfaces to marked changes:\n"
@@ -72,10 +78,10 @@ function include () {
 		echo -e "\t$user_change"
 	done
 	
-	echo "Done."
 	echo -e "Enter 'show' command to see all marked changes.\n"
 }
 
+# Exclude an app or watchface from InfiniTime, added to the list of marked changes to InfiniTime
 function exclude () {
 	# Same as include, just marked as excluded (<e> rather than <i>)
 	echo -e "\nAdding the following Apps and Watchfaces to marked changes:\n"
@@ -95,10 +101,13 @@ function exclude () {
 	echo -e "Enter 'show' command to see all marked changes.\n"
 }
 
+# Set the InfiniTime directory to read and write to
 function setit () {
-	echo ""
+	it_dir=$1
+	echo -e "\nInfiniTime directory set as $it_dir\n"
 }
 
+# Show all marked changes
 function show {
 	echo ""
 	for i in ${it_changes[*]}
@@ -108,6 +117,7 @@ function show {
 	echo ""
 }
 
+# Remove marked change
 function remove () {
 	echo ""
 }
@@ -153,6 +163,7 @@ while : ; do
 			exclude "${user_options[*]}"
 			;;
 		setit*)
+			setit "${user_options[*]}"
 			;;
 		show)
 			show
