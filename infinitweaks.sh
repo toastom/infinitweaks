@@ -16,7 +16,6 @@ function helpInfo {
 	echo -e "all\t\t\t   | show all default InfiniTime apps/screens available to modify"
 	echo -e "apply\t\t\t   | applies marked included/excluded changes"
 	echo -e "clear\t\t\t   | clear the screen"
-	echo -e "compile\t\t\t   | compile InfiniTime with marked changes"
 	echo -e "include App1 App2 App3\t   | tells infinitweaks which app to include. Default is all. Must use the name shown from command 'all'"
 	echo -e "exclude App4 App5 App6\t   | tells infinitweaks which app to exclude. Default is none. Must use the name shown from command 'all'"
 	echo -e "setit <path-to-InfiniTime> | tells infinitweaks where the InfiniTime directory is"
@@ -31,7 +30,6 @@ readonly -a command_list=(
 	"all"
 	"apply"
 	"clear"
-	"compile"
 	"include"
 	"exclude"
 	"setit"
@@ -79,10 +77,6 @@ function all {
 function apply {
 	check_it $it_dir
 	python3 scripts/apply_it_changes.py
-}
-
-function compile {
-	check_it $it_dir
 }
 
 # Include a new app or watchface into the list of marked changes to InfiniTime
@@ -190,9 +184,6 @@ while : ; do
 			;;
 		apply)
 			apply
-			;;
-		compile)
-			compile
 			;;
 		include*)
 			include "${user_options[*]}"

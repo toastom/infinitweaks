@@ -25,7 +25,6 @@ Reduce the amount of used memory to save resources for your own custom apps, wat
 Commands
 - `all` \- show all marked changes to InfiniTime build
 - `apply` \- apply marked changes to local InfiniTime repository
-- `compile` \- compile a new InfiniTime build with the marked changes
 - `remove` \- unmark a change to the current InfiniTime build
 
 ### How it works
@@ -46,10 +45,9 @@ Commands
     - Other apps not marked in the changes won't be touched and will default to included
 - Use `apply` to apply the marked changes
     - This will modify the CMakeLists.txt and Apps.h files by commenting out your AppName if you want it excluded, or uncommenting it/adding it if marked as included.
-- Use `compile <IT-build-name>` to compile the modified version of InfiniTime, and pass in your desired name for the resulting zip archive
 
-After all this, you should be able to carry on with the standard firmware upload process using the newly generated zip file.
+After all this, you should be able to carry on with the standard firmware compile and upload process
 
-NOTE: For a normal user, you shouldn't need to touch any files found in this repo besides `infinitweaks.sh`. Everything can be done from the main bash script, and all other files here are used by this script. 
+NOTE: For a normal user, you shouldn't need to touch any files found in this repo besides `infinitweaks.sh`. Everything can be done from this script, and all other files here are used by this script. 
 
 Thanks for reading. If you want to contribute code, please know that I am fairly new to bash and Cmake, so any improvements and constructive criticism is encouraged! Don't be afraid to submit a PR that will help improve this project. Oh, and as always, file detailed bug reports in the Github Issues.
