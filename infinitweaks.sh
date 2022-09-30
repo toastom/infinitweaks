@@ -19,7 +19,7 @@ function helpInfo {
 	echo -e "include App1 App2 App3\t   | tells infinitweaks which app to include. Default is all. Must use the name shown from command 'all'"
 	echo -e "exclude App4 App5 App6\t   | tells infinitweaks which app to exclude. Default is none. Must use the name shown from command 'all'"
 	echo -e "setit <path-to-InfiniTime> | tells infinitweaks where the InfiniTime directory is"
-	echo -e "show\t\t\t   | show marked InfiniTime changes. <i> is include, <e> is exclude"
+	echo -e "show\t\t\t   | show marked InfiniTime changes. <+> is include, <-> is exclude"
 	echo -e "remove <entry-to-remove>   | remove a selected app from the list of changes. Must use the name shown from command 'all'"
 	echo -e "help\t\t\t   | show this screen again"
 	echo ""
@@ -48,6 +48,8 @@ function check_it () {
 	if [ ! -d $1 ] || [ -z $1 ];
 	then
 		echo -e "\nERROR: Local InfiniTime repository not found."
+		echo -e "\nInfiniTime directory not set."
+		echo -e "InfiniTime directory previously set as $it_dir\n"
 		return 1
 	fi
 	return 0
@@ -57,11 +59,10 @@ function check_it () {
 # Dependent on the version of IT directory set by 'setit' command
 function all {
 	check_it $it_dir
-	# If checking the IT dir resulted in an error, return that same error
-	if [ ! $? = 0 ];
+	# Not a good directory from check_it
+	if [ $? -ne 0 ];
 	then
-		echo ""
-		return $?
+		return 1
 	fi
 	
 	python3 scripts/search_apps.py $it_dir
@@ -76,15 +77,26 @@ function all {
 # Edits the files in the $it_dir directory to apply marked changes
 function apply {
 	check_it $it_dir
+	# Not a good directory from check_it
+	if [ $? -ne 0 ];
+	then
+		return 1
+	fi
+	
 	python3 scripts/apply_it_changes.py
 }
 
 # Include a new app or watchface into the list of marked changes to InfiniTime
-# Maybe later also check to see if the app they want to include or exclude is present in 
-# the marked IT directory
+# TODO: Check to see if the app they want to include or exclude is present in $it_dir/src
 function include () {
 	check_it $it_dir
-	# Marking changes as <i> in $it_changes
+	# Not a good directory from check_it
+	if [ $? -ne 0 ];
+	then
+		return 1
+	fi
+	
+	# Marking changes as <+> in $it_changes
 	echo -e "\nAdding the following apps and watchfaces to marked changes:\n"
 	
 	local -i cnt
@@ -92,7 +104,7 @@ function include () {
 	for i in $1
 	do
 		cnt=cnt+1
-		user_change="<i>"
+		user_change="<+>"
 		user_change+=$( echo "$1" | cut -d " " --fields=$cnt )
 		it_changes+=($user_change)
 		echo -e "\t$user_change"
@@ -104,7 +116,13 @@ function include () {
 # Exclude an app or watchface from InfiniTime, added to the list of marked changes to InfiniTime
 function exclude () {
 	check_it $it_dir
-	# Same as include, just marked as excluded (<e> rather than <i>)
+	# Not a good directory from check_it
+	if [ $? -ne 0 ];
+	then
+		return 1
+	fi
+	
+	# Same as include, just marked as excluded (<-> rather than <+>)
 	echo -e "\nAdding the following apps and watchfaces to marked changes:\n"
 	
 	local -i count
@@ -112,7 +130,7 @@ function exclude () {
 	for i in $1
 	do
 		count=count+1
-		user_change="<e>"
+		user_change="<->"
 		user_change+=$( echo "$1" | cut -d " " --fields=$count )
 		it_changes+=($user_change)
 		echo -e "\t$user_change"
@@ -127,8 +145,6 @@ function setit () {
 	# Not a good directory from check_it
 	if [ $? -ne 0 ];
 	then
-		echo -e "\nInfiniTime directory not set."
-		echo -e "InfiniTime directory previously set as $it_dir\n"
 		return 1
 	fi
 	it_dir=$1
@@ -172,7 +188,6 @@ while : ; do
 			continue
 		fi
 		user_options+="$i "
-		#echo $i
 	done
 	
 	case $user_input in 
@@ -186,7 +201,6 @@ while : ; do
 			apply
 			;;
 		include*)
-			include "${user_options[*]}"
 			include "${user_options[*]}"
 			;;
 		exclude*)
