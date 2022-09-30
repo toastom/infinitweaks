@@ -4,10 +4,8 @@ Compile InfiniTime with only the apps and screens you need.
 Reduce the amount of used memory to save resources for your own custom apps, watchfaces, images, or fonts.
 
 ### Requirements
-- Any Linux system with a bash shell
+- Any Linux system with a bash shell and Python3
 - A local InfiniTime repository
-- A PineTime smartwatch from Pine64
-- Your favorite PineTime companion app
 
 ### Current Features
 - CLI interface.
