@@ -13,7 +13,7 @@ Reduce the amount of used memory to save resources for your own custom apps, wat
 - CLI interface.
 - Easy UX. Everything can be done from one simple, (eventually) well-documented bash script (`./infinitweaks.sh`).
 - `include` \- mark a watchface or app to include in a new InfiniTime build
-- `exclude` \- mark a watchface or app to include in a new InfiniTime build
+- `exclude` \- mark a watchface or app to exclude in a new InfiniTime build
 - `setit` \- set a working path to an existing local InfiniTime repository
 - `show` \- show all current marked changes
 
@@ -52,4 +52,6 @@ Commands
 
 After all this, you should be able to carry on with the standard firmware upload process using the newly generated zip file.
 
-NOTE: Aside from `infinitweaks.sh`, any other files found in this repo you shouldn't need to touch for regular use. Everything can be done from the main bash script, and all other files in this repo are used by this script. 
+NOTE: For a normal user, you shouldn't need to touch any files found in this repo besides `infinitweaks.sh`. Everything can be done from the main bash script, and all other files here are used by this script. 
+
+Thanks for reading. If you want to contribute code, please know that I am fairly new to bash and Cmake, so any improvements and constructive criticism is encouraged! Don't be afraid to submit a PR that will help improve this project. Oh, and as always, file detailed bug reports in the Github Issues.

@@ -1,12 +1,10 @@
 #!/bin/bash
 
-readonly version="0.0.1"
-readonly it_compatibility="1.10.x"
+readonly version="0.1.1"
 
 function aboutInfo {
 	echo -e "\ninfinitweaks v$version\n"
 	echo 	"Customize your own build of InfiniTime with only the apps you need."
-	echo 	"Compatible with InfiniTime v$it_compatibility for the PineTime smartwatch by Pine64."
 	echo 	"Enter 'help' for more options."
 	echo 	"Enter 'about' to show this screen again."
 	echo -e "https://github.com/toastom/infinitweaks \n"
@@ -28,7 +26,7 @@ function helpInfo {
 	echo ""
 }
 
-command_list=(
+readonly -a command_list=(
 	"about"
 	"all"
 	"apply"
@@ -42,30 +40,58 @@ command_list=(
 	"help"
 )
 
-it_changes=("<e>InfiniPaint" "<i>Twos")
+it_changes=()
 it_dir=""
+
+# Check if the user has set a proper IT repo with setit command
+# Later add InfiniTime as a git submodule in this repo
+function check_it () {
+	# Make sure the IT directory is valid and not empty
+	if [ ! -d $1 ] || [ -z $1 ];
+	then
+		echo -e "\nERROR: Local InfiniTime repository not found."
+		return 1
+	fi
+	return 0
+}
 
 # Show all apps and watchfaces available for the user to modify
 # Dependent on the version of IT directory set by 'setit' command
 function all {
-	echo ""
+	check_it $it_dir
+	# If checking the IT dir resulted in an error, return that same error
+	if [ ! $? = 0 ];
+	then
+		echo ""
+		return $?
+	fi
+	
+	python3 scripts/search_apps.py $it_dir
+	
+	#echo -e "\nNOTE: Removal of some features necessary to InfiniTime may cause instability."
+	#echo "It is recommended to backup your InfiniTime repository before continuing."
+	#echo "When using the 'include' and 'exclude' commands, enter only the app name without any extension."
+	#echo "e.g. 'exclude InfiniPaint' NOT 'exclude InfiniPaint.cpp'"
 }
 
 # Requires $it_dir to be set by 'setit' command
 # Edits the files in the $it_dir directory to apply marked changes
-# Needs error checking to ensure the user has set a proper IT dir
 function apply {
-	echo ""
+	check_it $it_dir
+	python3 scripts/apply_it_changes.py
 }
 
 function compile {
-	echo ""
+	check_it $it_dir
 }
 
 # Include a new app or watchface into the list of marked changes to InfiniTime
+# Maybe later also check to see if the app they want to include or exclude is present in 
+# the marked IT directory
 function include () {
+	check_it $it_dir
 	# Marking changes as <i> in $it_changes
-	echo -e "\nAdding the following Apps and Watchfaces to marked changes:\n"
+	echo -e "\nAdding the following apps and watchfaces to marked changes:\n"
 	
 	local -i cnt
 	cnt=0
@@ -83,26 +109,34 @@ function include () {
 
 # Exclude an app or watchface from InfiniTime, added to the list of marked changes to InfiniTime
 function exclude () {
+	check_it $it_dir
 	# Same as include, just marked as excluded (<e> rather than <i>)
-	echo -e "\nAdding the following Apps and Watchfaces to marked changes:\n"
+	echo -e "\nAdding the following apps and watchfaces to marked changes:\n"
 	
-	local -i cnt
-	cnt=0
+	local -i count
+	count=0
 	for i in $1
 	do
-		cnt=cnt+1
+		count=count+1
 		user_change="<e>"
-		user_change+=$( echo "$1" | cut -d " " --fields=$cnt )
+		user_change+=$( echo "$1" | cut -d " " --fields=$count )
 		it_changes+=($user_change)
 		echo -e "\t$user_change"
 	done
 	
-	echo "Done."
 	echo -e "Enter 'show' command to see all marked changes.\n"
 }
 
 # Set the InfiniTime directory to read and write to
 function setit () {
+	check_it $1
+	# Not a good directory from check_it
+	if [ $? -ne 0 ];
+	then
+		echo -e "\nInfiniTime directory not set."
+		echo -e "InfiniTime directory previously set as $it_dir\n"
+		return 1
+	fi
 	it_dir=$1
 	echo -e "\nInfiniTime directory set as $it_dir\n"
 }
@@ -118,6 +152,9 @@ function show {
 }
 
 # Remove marked change
+# Search in the it_changes array for the specified app/watchface input
+# If it doesn't match or otherwise isn't found, tell the user and give an error
+# If it does match, remove the entry
 function remove () {
 	echo ""
 }
@@ -143,20 +180,22 @@ while : ; do
 		user_options+="$i "
 		#echo $i
 	done
-	#echo ${user_options[*]}
 	
 	case $user_input in 
 		about)
-			# About screen
 			aboutInfo
 			;;
 		all)
+			all
 			;;
 		apply)
+			apply
 			;;
 		compile)
+			compile
 			;;
 		include*)
+			include "${user_options[*]}"
 			include "${user_options[*]}"
 			;;
 		exclude*)
@@ -169,11 +208,11 @@ while : ; do
 			show
 			;;
 		remove*)
+			remove "${user_options[*]}"
 			;;
 		help) 
-			# Call help display function
 			helpInfo
-			;; # break
+			;;
 		clear)
 			clear
 			;;
